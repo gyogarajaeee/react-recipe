@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const createToken = (user, secret, expiresIn) => {
-    const {username, password} = user;
+    const {username, email} = user;
     return jwt.sign({username, email}, secret, {expiresIn})
 }
 exports.resolvers = {
