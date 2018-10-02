@@ -1,15 +1,21 @@
 import React from 'react';
 import { Mutation } from 'react-apollo';
 import { SIGNUP_USER } from '../../queries/index';
+import Error from '../Error';
+
+const initialState = {
+    username: "",
+    email: "",
+    password: "",
+    passwordConfirmation: ""
+};
 
 class Signup extends React.Component {
-    state = {
-        username: "",
-        email: "",
-        password: "",
-        passwordConfirmation: ""
-    };
+    state = { ...initialState };
 
+    clearState = () => {
+        this.setState({ ...initialState });
+    }
     handleChange = event => {
         const { name, value } = event.target;
         this.setState({
@@ -19,9 +25,17 @@ class Signup extends React.Component {
 
     handleSubmit = (event, signupUser) => {
         event.preventDefault();
-        signupUser().then(data => {
+        signupUser().then(({data}) => {
             console.log(data);
-        })
+            localStorage.setItem('token', data.signupUser.token);
+            this.clearState();
+        });
+        
+    }
+    validateForm = () => {
+        const { username, email, password, passwordConfirmation } = this.state;
+        const isInValid = !username || !email || !password || password !== passwordConfirmation;
+        return isInValid;
     }
     render() {
         const { email, username, password, passwordConfirmation} = this.state;
@@ -36,7 +50,11 @@ class Signup extends React.Component {
                                 <input type="email" name="email" value={email} onChange={this.handleChange} placeholder="Email Address" />
                                 <input type="password" name="password" value={password} onChange={this.handleChange} placeholder="Password" />
                                 <input type="password" name="passwordConfirmation" value={passwordConfirmation} onChange={this.handleChange} placeholder="Confirm Password" />
-                                <button type="submit" className="button-primary">Submit</button>
+                                <button 
+                                    type="submit"
+                                    disabled={loading || this.validateForm()}
+                                    className="button-primary">Submit</button>
+                                {error && <Error error={error} />}
                             </form>
                         )
                     }
