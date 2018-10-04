@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom'
 import './index.css';
 import App from './components/App';
+import Navbar from './components/Navbar';
 import Signin from './components/Auth/Signin';
 import Signup from './components/Auth/Signup';
 import withSession from './components/withSessions'
@@ -30,14 +31,17 @@ const client = new ApolloClient({
     }
 });
 
-const Root = () => (
+const Root = ({ refetch }) => (
     <Router>
-        <Switch>
-            <Route path="/" exact component={App} />
-            <Route path="/signin" component={Signin} />
-            <Route path="/signup" component={Signup} />
-            <Redirect to="/" />
-        </Switch>
+        <Fragment>       
+            <Navbar />
+            <Switch>
+                <Route path="/" exact component={App} />
+                <Route path="/signin" render={() => <Signin refetch={refetch} />} />
+                <Route path="/signup" render={() => <Signup refetch={refetch} />} />
+                <Redirect to="/" />
+            </Switch>
+        </Fragment>
     </Router>
 );
 
