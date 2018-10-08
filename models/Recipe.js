@@ -30,5 +30,7 @@ const RecipeSchema = new Schema({
         type: String
     }
 });
-
+RecipeSchema.index({
+    '$**' : 'text'
+});
 module.exports = mongoose.model('Recipe', RecipeSchema);

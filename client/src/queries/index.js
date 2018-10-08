@@ -15,6 +15,21 @@ query{
 }`;
 
 /* Recipies Mutations */
+export const ADD_RECIPE = gql`
+mutation($name: String!, $category: String!, $description: String!,
+  $instructions: String!, $username: String){
+    addRecipe(name: $name, description: $description, category: $category,
+      instructions: $instructions, username: $username){
+        _id
+        name
+        description
+        instructions
+        category
+        likes
+        username
+      }
+  }
+`;
 
 /* User Queries */
 export const GET_CURRENT_USER = gql`
@@ -23,10 +38,47 @@ query{
     username
     joinDate
     email
+    favorites{
+      _id
+      name
+    }
   }
 }
 `;
 
+export const GET_USER_RECIPES = gql`
+query($username: String!){
+  getUserRecipes(username: $username){
+    _id
+    name
+    likes
+  }
+}
+`;
+export const GET_RECIPE = gql`
+query($_id: ID!){
+  getRecipe(_id: $_id){
+    _id
+    name
+    category
+    description
+    instructions
+    createdDate
+    likes
+    username
+  }
+}
+`;
+
+export const SEARCH_RECIPES = gql`
+query($searchTerm: String){
+  searchRecipes(searchTerm: $searchTerm){
+    _id
+    name
+    likes
+  }
+}
+`;
 /* User Mutations */
 export const SIGNIN_USER = gql`
 mutation($username: String!, $password: String!){

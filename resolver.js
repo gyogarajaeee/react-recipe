@@ -8,8 +8,33 @@ const createToken = (user, secret, expiresIn) => {
 exports.resolvers = {
     Query : {
         getAllRecipes: async (root, args, {Recipe}) => {
-            const allRecipes = await Recipe.find();
+            const allRecipes = await Recipe.find().sort({ createdDate: 'desc' });
             return allRecipes;
+        },
+        getRecipe: async (root, {_id}, {Recipe}) => {
+            const recipe = await Recipe.findOne({ _id });
+            return recipe;
+        },
+        searchRecipes: async (root, {searchTerm}, {Recipe}) => {
+            if(searchTerm){
+                const searchResult = await Recipe.find({
+                    $text: { $search : searchTerm}
+                },{
+                    score: { $meta: "textScore"}
+                }).sort({ 
+                    score: {$meta: "textScore"}
+                });
+                return searchResult;
+            } else {
+                const recipe = await Recipe.find().sort({ likes: 'desc', createdDate: 'desc'});
+                return recipe;
+            }
+        },
+        getUserRecipes : async (root, {username}, {Recipe}) =>{
+            const userRecipes = await Recipe.find({username}).sort({
+                createdDate: 'desc'
+            });
+            return userRecipes;
         },
         getCurrentUser: async (root, args, {User, currentUser}) => {
             if(!currentUser){
